@@ -26,5 +26,26 @@
         "timestamp": "2025-02-07 18:43:51",
         "latitude": 0.0,
         "longitude": 0.0
+    },
+    {
+        "name": "P S Adithyan",
+        "admissionNo": "21ec053",
+        "timestamp": "2025-02-07 18:45:30",
+        "latitude": 0.0,
+        "longitude": 0.0
+    },
+    {
+        "name": "Josemi Joby",
+        "admissionNo": "21ec038",
+        "timestamp": "2025-02-07 18:45:38",
+        "latitude": 0.0,
+        "longitude": 0.0
+    },
+    {
+        "name": "Sandra Mariya Binu",
+        "admissionNo": "21ec058",
+        "timestamp": "2025-02-07 18:45:47",
+        "latitude": 0.0,
+        "longitude": 0.0
     }
 ]
