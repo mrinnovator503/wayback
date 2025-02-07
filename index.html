@@ -1,9 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta http-equiv="refresh" content="0; url=https://your-ngrok-url.ngrok.io/log">
+    <meta http-equiv="refresh" content="0; url=LOADING">
     <script>
-        window.location.href = "https://your-ngrok-url.ngrok.io/log";
+        fetch("https://your-username.github.io/esp32-server-redirect/ngrok-url.txt")
+            .then(response => response.text())
+            .then(url => {
+                window.location.href = url.trim();
+            });
     </script>
 </head>
 <body>
