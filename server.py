@@ -1,10 +1,10 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import json
 import os
 from datetime import datetime
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder=".")
 CORS(app)
 
 STUDENT_LOGS_FILE = "student_logs.json"
@@ -39,7 +39,7 @@ def receive_scan():
         logs.append({
             "name": name,
             "admissionNo": admission_no,
-            "timestamp": timestamp,
+            "timestamp": timestamp,  # ✅ Store actual scan time
             "latitude": latitude,
             "longitude": longitude
         })
@@ -55,6 +55,11 @@ def receive_scan():
 def get_logs():
     logs = load_logs()
     return jsonify(logs)
+
+@app.route('/')
+@app.route('/dashboard.html')
+def serve_dashboard():
+    return send_from_directory(".", "dashboard.html")
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3000, debug=True)
