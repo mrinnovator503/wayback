@@ -206,7 +206,6 @@
 
                 // Update the logs table
                 let tableBody = document.getElementById("logs-table");
-                tableBody.innerHTML = "";
 
                 if (data.length === 0) {
                     tableBody.innerHTML = "<tr><td colspan='4'>No logs available</td></tr>";
@@ -220,6 +219,7 @@
                     .find(log => log.latitude !== 0 && log.longitude !== 0);
 
                 // Process and display each log entry
+                tableBody.innerHTML = ""; // Clear table before updating
                 for (const log of data) {
                     const location = await getHumanReadableLocation(log.latitude, log.longitude);
                     
@@ -246,26 +246,9 @@
             }
         }
 
-        // Error handler for failed updates
-        function handleUpdateError(error) {
-            console.error("Update failed:", error);
-            document.getElementById("update-status").textContent = 
-                "Update failed. Retrying...";
-        }
-
-        // Initialize real-time updates
-        function initializeRealTimeUpdates() {
-            // Initial fetch
-            fetchLogs().catch(handleUpdateError);
-
-            // Set up regular updates
-            setInterval(() => {
-                fetchLogs().catch(handleUpdateError);
-            }, 3000); // Update every 3 seconds
-        }
-
-        // Start the application
-        document.addEventListener('DOMContentLoaded', initializeRealTimeUpdates);
+        // Refresh logs every 3 seconds
+        setInterval(fetchLogs, 3000);
+        fetchLogs();
     </script>
 </body>
 </html>
