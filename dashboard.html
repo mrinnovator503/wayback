@@ -10,118 +10,62 @@
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     
     <style>
-        /* Core Styles */
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: Arial, sans-serif;
             background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-        }
-
-        /* Header Styles */
-        .header {
             text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin: 20px;
         }
 
-        h2 {
-            color: #2c3e50;
-            margin: 0;
-            font-size: 24px;
-        }
-
-        /* Map Container */
         #map {
             width: 90%;
             height: 400px;
             margin: 20px auto;
             border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        /* Status Indicator */
-        .status-indicator {
-            text-align: center;
-            margin: 20px 0;
-            padding: 10px;
-            background: #fff;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .status-text {
-            font-weight: bold;
-            color: #2c3e50;
-        }
-
-        /* Table Styles */
         .table-container {
-            margin: 20px auto;
             width: 90%;
+            margin: 20px auto;
             background: white;
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            overflow: hidden;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            background: white;
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
         }
 
         th {
-            background: #2c3e50;
+            background: #007bff;
             color: white;
-            padding: 15px;
-            text-align: left;
         }
 
-        td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #eee;
-        }
-
-        tr:hover {
-            background: #f8f9fa;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-
-            #map {
-                height: 300px;
-            }
-
-            .table-container {
-                width: 100%;
-                overflow-x: auto;
-            }
-
-            th, td {
-                padding: 10px;
-            }
+        select, button {
+            margin: 10px;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h2>🚌 Student Bus Tracking System</h2>
-    </div>
+
+    <h2>🚌 Student Bus Tracking System</h2>
+
+    <label for="date-picker">Select Date:</label>
+    <input type="date" id="date-picker">
+    <button onclick="fetchLogs()">Load Logs</button>
+    <button onclick="downloadLogs()">Download CSV</button>
 
     <div id="map"></div>
-
-    <div class="status-indicator">
-        <span class="status-text" id="update-status">Last Updated: Never</span>
-    </div>
 
     <div class="table-container">
         <table>
@@ -134,121 +78,71 @@
                 </tr>
             </thead>
             <tbody id="logs-table">
-                <tr><td colspan="4">Loading data...</td></tr>
+                <tr><td colspan="4">Select a date to load logs</td></tr>
             </tbody>
         </table>
     </div>
 
     <script>
-        // Initialize map with default view
         let map = L.map('map').setView([10.0, 76.0], 12);
-        
-        // Add OpenStreetMap tiles
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
+        let busMarker = L.marker([10.0, 76.0]).addTo(map).bindPopup("Bus Location");
 
-        // Initialize bus marker with custom icon
-        let busMarker = L.marker([10.0, 76.0]).addTo(map)
-            .bindPopup("Bus Location")
-            .openPopup();
-
-        // Function to get human-readable location
         async function getHumanReadableLocation(lat, lon) {
-            if (lat === 0 && lon === 0) return "Location Unavailable";
-            try {
-                let response = await fetch(
-                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
-                );
-                let data = await response.json();
-                return data.display_name || "Location Not Found";
-            } catch (error) {
-                console.error("Error fetching location:", error);
-                return "Location Lookup Failed";
-            }
+            if (lat === 0 && lon === 0) return "Unknown Location";
+            let response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+            let data = await response.json();
+            return data.display_name || "Location Not Found";
         }
 
-        // Function to update map marker
-        function updateMap(latitude, longitude) {
-            if (latitude && longitude && latitude !== 0 && longitude !== 0) {
-                let newLatLng = [latitude, longitude];
-                busMarker.setLatLng(newLatLng);
-                map.setView(newLatLng, 14);
-                console.log(`Updated map position to: ${latitude}, ${longitude}`);
-            } else {
-                console.log('Invalid coordinates received:', latitude, longitude);
-            }
-        }
-
-        // Function to format timestamp
-        function formatTime(timestamp) {
-            return new Date(timestamp).toLocaleString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: true
-            });
-        }
-
-        // Main function to fetch and update logs
         async function fetchLogs() {
-            try {
-                // First fetch the NGROK URL from GitHub
-                const ngrokResponse = await fetch("https://mrinnovator503.github.io/wayback/ngrok-url.txt");
-                const ngrokURL = (await ngrokResponse.text()).trim();
-                const apiUrl = `${ngrokURL}/logs`;
-                
-                console.log('Fetching from:', apiUrl);
-
-                // Fetch the actual logs
-                const response = await fetch(apiUrl);
-                const data = await response.json();
-
-                // Update the logs table
-                let tableBody = document.getElementById("logs-table");
-
-                if (data.length === 0) {
-                    tableBody.innerHTML = "<tr><td colspan='4'>No logs available</td></tr>";
-                    return;
-                }
-
-                // Find the most recent valid location
-                const lastValidLocation = data
-                    .slice()
-                    .reverse()
-                    .find(log => log.latitude !== 0 && log.longitude !== 0);
-
-                // Process and display each log entry
-                tableBody.innerHTML = ""; // Clear table before updating
-                for (const log of data) {
-                    const location = await getHumanReadableLocation(log.latitude, log.longitude);
-                    
-                    const row = `<tr>
-                        <td>${log.name}</td>
-                        <td>${log.admissionNo}</td>
-                        <td>${formatTime(log.timestamp)}</td>
-                        <td>${location}</td>
-                    </tr>`;
-                    tableBody.innerHTML += row;
-                }
-
-                // Update map with last valid location
-                if (lastValidLocation) {
-                    updateMap(lastValidLocation.latitude, lastValidLocation.longitude);
-                    document.getElementById("update-status").textContent = 
-                        `Last Updated: ${formatTime(lastValidLocation.timestamp)}`;
-                }
-
-            } catch (error) {
-                console.error("Error updating dashboard:", error);
-                document.getElementById("logs-table").innerHTML = 
-                    "<tr><td colspan='4'>Error fetching data. Please try again later.</td></tr>";
+            let date = document.getElementById("date-picker").value;
+            if (!date) {
+                alert("Please select a date.");
+                return;
             }
+
+            let response = await fetch(`/logs/${date}`);
+            let data = await response.json();
+
+            let tableBody = document.getElementById("logs-table");
+            tableBody.innerHTML = "";
+
+            if (data.length === 0) {
+                tableBody.innerHTML = "<tr><td colspan='4'>No logs available for this date</td></tr>";
+                return;
+            }
+
+            let lastLocation = { lat: 10.0, lon: 76.0 };
+            for (let log of data) {
+                let location = await getHumanReadableLocation(log.latitude, log.longitude);
+
+                let row = `<tr>
+                    <td>${log.name}</td>
+                    <td>${log.admissionNo}</td>
+                    <td>${log.timestamp}</td>
+                    <td>${location}</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+
+                lastLocation = { lat: log.latitude, lon: log.longitude };
+            }
+
+            busMarker.setLatLng([lastLocation.lat, lastLocation.lon]);
+            map.setView([lastLocation.lat, lastLocation.lon], 14);
         }
 
-        // Refresh logs every 3 seconds
-        setInterval(fetchLogs, 3000);
-        fetchLogs();
+        function downloadLogs() {
+            let date = document.getElementById("date-picker").value;
+            if (!date) {
+                alert("Please select a date.");
+                return;
+            }
+            window.location.href = `/download_logs/${date}`;
+        }
     </script>
+
 </body>
 </html>

@@ -201,5 +201,89 @@
         "timestamp": "2025-02-09 10:52:12",
         "latitude": 9.54622,
         "longitude": 76.528915
+    },
+    {
+        "name": "P S Adithyan",
+        "admissionNo": "21ec053",
+        "timestamp": "2025-02-09 12:26:14",
+        "latitude": 0.0,
+        "longitude": 0.0
+    },
+    {
+        "name": "Alex S Vanissery",
+        "admissionNo": "21ec014",
+        "timestamp": "2025-02-09 20:13:08",
+        "latitude": 0.0,
+        "longitude": 0.0
+    },
+    {
+        "name": "Sandra Mariya Binu",
+        "admissionNo": "21ec058",
+        "timestamp": "2025-02-09 20:14:04",
+        "latitude": 9.546246,
+        "longitude": 76.528923
+    },
+    {
+        "name": "Alex S Vanissery",
+        "admissionNo": "21ec014",
+        "timestamp": "2025-02-09 20:23:58",
+        "latitude": 9.54637,
+        "longitude": 76.528923
+    },
+    {
+        "name": "Sandra Mariya Binu",
+        "admissionNo": "21ec058",
+        "timestamp": "2025-02-09 20:24:20",
+        "latitude": 9.546316,
+        "longitude": 76.5289
+    },
+    {
+        "name": "Josemi Joby",
+        "admissionNo": "21ec038",
+        "timestamp": "2025-02-09 20:24:34",
+        "latitude": 9.546276,
+        "longitude": 76.528908
+    },
+    {
+        "name": "P S Adithyan",
+        "admissionNo": "21ec053",
+        "timestamp": "2025-02-09 20:24:44",
+        "latitude": 9.546257,
+        "longitude": 76.5289
+    },
+    {
+        "name": "Sandra Mariya Binu",
+        "admissionNo": "21ec058",
+        "timestamp": "2025-02-10 14:23:18",
+        "latitude": 9.727377,
+        "longitude": 76.726128
+    },
+    {
+        "name": "Alex S Vanissery",
+        "admissionNo": "21ec014",
+        "timestamp": "2025-02-10 14:27:40",
+        "latitude": 9.72727,
+        "longitude": 76.726059
+    },
+    {
+        "name": "P S Adithyan",
+        "admissionNo": "21ec053",
+        "timestamp": "2025-02-10 14:56:23",
+        "latitude": 9.726442,
+        "longitude": 76.725677
+    },
+    {
+        "name": "P S Adithyan",
+        "admissionNo": "21ec053",
+        "timestamp": "2025-02-10 16:07:50",
+        "latitude": 9.727648,
+        "longitude": 76.726845
+    },
+    {
+        "name": "P S Adithyan",
+        "admissionNo": "21ec053",
+        "timestamp": "2025-02-14 09:17:50",
+        "latitude": 0.0,
+        "longitude": 0.0
     }
 ]

@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, Response
 from flask_cors import CORS
 import json
 import os
@@ -35,11 +35,10 @@ def receive_scan():
             return jsonify({"error": "Invalid data"}), 400
 
         logs = load_logs()
-
         logs.append({
             "name": name,
             "admissionNo": admission_no,
-            "timestamp": timestamp,  # ✅ Store actual scan time
+            "timestamp": timestamp,
             "latitude": latitude,
             "longitude": longitude
         })
@@ -55,6 +54,25 @@ def receive_scan():
 def get_logs():
     logs = load_logs()
     return jsonify(logs)
+
+@app.route('/logs/<date>', methods=['GET'])
+def get_logs_by_date(date):
+    logs = load_logs()
+    filtered_logs = [log for log in logs if log["timestamp"].startswith(date)]
+    return jsonify(filtered_logs)
+
+@app.route('/download_logs/<date>', methods=['GET'])
+def download_logs(date):
+    logs = load_logs()
+    filtered_logs = [log for log in logs if log["timestamp"].startswith(date)]
+
+    csv_data = "Name,Admission No,Timestamp,Latitude,Longitude\n"
+    for log in filtered_logs:
+        csv_data += f'{log["name"]},{log["admissionNo"]},{log["timestamp"]},{log["latitude"]},{log["longitude"]}\n'
+
+    response = Response(csv_data, mimetype="text/csv")
+    response.headers.set("Content-Disposition", f"attachment; filename=logs_{date}.csv")
+    return response
 
 @app.route('/')
 @app.route('/dashboard.html')
