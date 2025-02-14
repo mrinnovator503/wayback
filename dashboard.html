@@ -24,6 +24,7 @@
     
     <label>Select Date: <input type="date" id="datePicker"></label>
     <button onclick="fetchLogs()">🔄 Refresh</button>
+    <button onclick="downloadLogs()">📥 Download Logs</button>
 
     <p><strong>Last Location Update:</strong> <span id="lastUpdate">Fetching...</span></p>
     <div id="map"></div>
@@ -66,29 +67,13 @@
             }
         }
 
-        async function fetchLastLocation() {
-            let response = await fetch("/last_location");
-            let data = await response.json();
-
-            if (data.error) {
-                document.getElementById("lastUpdate").textContent = "No data available";
-                return;
-            }
-
-            busMarker.setLatLng([data.latitude, data.longitude]);
-            busMarker.bindPopup(`📍 ${data.location}`).openPopup();
-            map.setView([data.latitude, data.longitude], 14);
-            document.getElementById("lastUpdate").textContent = data.timestamp;
+        function downloadLogs() {
+            let date = document.getElementById("datePicker").value;
+            window.location.href = `/download_logs?date=${date}`;
         }
 
-        window.onload = () => {
-            document.getElementById("datePicker").value = new Date().toISOString().split("T")[0];
-            fetchLogs();
-            fetchLastLocation();
-        };
-
+        window.onload = fetchLogs;
         setInterval(fetchLogs, 5000);
-        setInterval(fetchLastLocation, 5000);
     </script>
 </body>
 </html>

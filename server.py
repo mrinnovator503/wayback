@@ -2,8 +2,9 @@ from flask import Flask, request, jsonify, send_from_directory, Response
 from flask_cors import CORS
 import json
 import os
-from datetime import datetime
+import time
 import requests  # ✅ Added for location lookup
+from datetime import datetime
 
 app = Flask(__name__, static_folder=".")
 CORS(app)
@@ -26,18 +27,24 @@ def save_logs(data):
         json.dump(data, file, indent=4)
 
 # ✅ Function to convert latitude/longitude to location name
-def get_location_name(latitude, longitude):
+def get_location_name(latitude, longitude, retries=3):
     if latitude == 0 and longitude == 0:
         return "Location Unknown"
+
+    url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={latitude}&lon={longitude}"
     
-    try:
-        url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={latitude}&lon={longitude}"
-        response = requests.get(url, headers={"User-Agent": "student-bus-tracking"})
-        data = response.json()
-        return data.get("display_name", "Location Not Found")
-    except Exception as e:
-        print(f"Error fetching location name: {e}")
-        return "Location Lookup Failed"
+    for _ in range(retries):
+        try:
+            response = requests.get(url, headers={"User-Agent": "student-bus-tracking"}, timeout=3)
+            if response.status_code == 200:
+                data = response.json()
+                return data.get("display_name", "Location Not Found")
+            time.sleep(1)  # Wait before retrying
+        except Exception as e:
+            print(f"Error fetching location name (retrying...): {e}")
+            time.sleep(1)
+    
+    return "Location Lookup Failed"
 
 # ✅ Handle RFID scan and save log
 @app.route('/scan', methods=['POST'])
@@ -103,6 +110,30 @@ def get_last_location():
         "location": last_entry["location"],
         "timestamp": last_entry["timestamp"]
     })
+
+# ✅ Export logs for a selected date as CSV
+@app.route('/download_logs', methods=['GET'])
+def download_logs():
+    logs = load_logs()
+    selected_date = request.args.get("date", "")
+    
+    if not selected_date:
+        return jsonify({"error": "Date not provided"}), 400
+
+    filtered_logs = [log for log in logs if log["timestamp"].startswith(selected_date)]
+
+    if not filtered_logs:
+        return jsonify({"error": "No logs found for the selected date"}), 404
+
+    csv_data = "Name,Admission No,Timestamp,Location\n"
+    for log in filtered_logs:
+        csv_data += f"{log['name']},{log['admissionNo']},{log['timestamp']},{log['location']}\n"
+
+    return Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": f"attachment; filename=logs_{selected_date}.csv"}
+    )
 
 # ✅ Serve the dashboard page
 @app.route('/')

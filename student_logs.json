@@ -425,5 +425,45 @@
         "timestamp": "2025-02-14 12:11:02",
         "latitude": 9.726385,
         "longitude": 76.726143
+    },
+    {
+        "name": "Alex S Vanissery",
+        "admissionNo": "21ec014",
+        "timestamp": "2025-02-14 12:23:07",
+        "latitude": 9.727265,
+        "longitude": 76.725922,
+        "location": "Location Lookup Failed"
+    },
+    {
+        "name": "P S Adithyan",
+        "admissionNo": "21ec053",
+        "timestamp": "2025-02-14 12:24:11",
+        "latitude": 9.727336,
+        "longitude": 76.725906,
+        "location": "Location Lookup Failed"
+    },
+    {
+        "name": "Josemi Joby",
+        "admissionNo": "21ec038",
+        "timestamp": "2025-02-14 12:24:42",
+        "latitude": 9.72731,
+        "longitude": 76.725922,
+        "location": "Location Lookup Failed"
+    },
+    {
+        "name": "Sandra Mariya Binu",
+        "admissionNo": "21ec058",
+        "timestamp": "2025-02-14 12:24:49",
+        "latitude": 9.727311,
+        "longitude": 76.725922,
+        "location": "Location Lookup Failed"
+    },
+    {
+        "name": "Alex S Vanissery",
+        "admissionNo": "21ec014",
+        "timestamp": "2025-02-14 12:28:51",
+        "latitude": 9.727325,
+        "longitude": 76.725906,
+        "location": "Location Lookup Failed"
     }
 ]
