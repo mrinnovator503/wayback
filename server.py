@@ -69,6 +69,22 @@ def get_today_logs():
     today_logs = [log for log in logs if log["timestamp"].startswith(today)]
     return jsonify(today_logs)
 
+# ✅ Get latest scanned location
+@app.route('/latest_location', methods=['GET'])
+def get_latest_location():
+    logs = load_logs()
+    today = datetime.now().strftime("%Y-%m-%d")
+
+    latest_entry = next(
+        (log for log in reversed(logs) if log["latitude"] and log["longitude"] and log["timestamp"].startswith(today)),
+        None
+    )
+
+    if latest_entry:
+        return jsonify(latest_entry)
+    
+    return jsonify({"error": "No valid location found"}), 404
+
 # ✅ Serve the dashboard page
 @app.route('/')
 @app.route('/dashboard.html')

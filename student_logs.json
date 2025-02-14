@@ -313,5 +313,75 @@
         "timestamp": "2025-02-14 11:15:21",
         "latitude": 0.0,
         "longitude": 0.0
+    },
+    {
+        "name": "Sandra Mariya Binu",
+        "admissionNo": "21ec058",
+        "timestamp": "2025-02-14 11:26:05",
+        "latitude": 0.0,
+        "longitude": 0.0
+    },
+    {
+        "name": "Josemi Joby",
+        "admissionNo": "21ec038",
+        "timestamp": "2025-02-14 11:33:52",
+        "latitude": 0.0,
+        "longitude": 0.0
+    },
+    {
+        "name": "Alex S Vanissery",
+        "admissionNo": "21ec014",
+        "timestamp": "2025-02-14 11:46:11",
+        "latitude": 9.727365,
+        "longitude": 76.72583
+    },
+    {
+        "name": "P S Adithyan",
+        "admissionNo": "21ec053",
+        "timestamp": "2025-02-14 11:46:29",
+        "latitude": 9.727364,
+        "longitude": 76.725777
+    },
+    {
+        "name": "Sandra Mariya Binu",
+        "admissionNo": "21ec058",
+        "timestamp": "2025-02-14 11:46:38",
+        "latitude": 9.7274,
+        "longitude": 76.725769
+    },
+    {
+        "name": "Josemi Joby",
+        "admissionNo": "21ec038",
+        "timestamp": "2025-02-14 11:46:45",
+        "latitude": 9.727424,
+        "longitude": 76.725777
+    },
+    {
+        "name": "P S Adithyan",
+        "admissionNo": "21ec053",
+        "timestamp": "2025-02-14 11:48:34",
+        "latitude": 9.727292,
+        "longitude": 76.725899
+    },
+    {
+        "name": "Josemi Joby",
+        "admissionNo": "21ec038",
+        "timestamp": "2025-02-14 11:49:20",
+        "latitude": 9.727203,
+        "longitude": 76.725998
+    },
+    {
+        "name": "Sandra Mariya Binu",
+        "admissionNo": "21ec058",
+        "timestamp": "2025-02-14 11:49:26",
+        "latitude": 9.72721,
+        "longitude": 76.725975
+    },
+    {
+        "name": "Alex S Vanissery",
+        "admissionNo": "21ec014",
+        "timestamp": "2025-02-14 11:49:34",
+        "latitude": 9.727237,
+        "longitude": 76.725967
     }
 ]
