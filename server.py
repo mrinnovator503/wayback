@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, Response
 from flask_cors import CORS
 import json
 import os
@@ -75,18 +75,29 @@ def get_today_logs():
 def serve_dashboard():
     return send_from_directory(".", "dashboard.html")
 
-# ✅ Export logs as CSV file
+# ✅ Export logs for a selected date as CSV
 @app.route('/download_logs', methods=['GET'])
 def download_logs():
     logs = load_logs()
+    selected_date = request.args.get("date", "")
+    
+    if not selected_date:
+        return jsonify({"error": "Date not provided"}), 400
+
+    filtered_logs = [log for log in logs if log["timestamp"].startswith(selected_date)]
+
+    if not filtered_logs:
+        return jsonify({"error": "No logs found for the selected date"}), 404
+
     csv_data = "Name,Admission No,Timestamp,Latitude,Longitude\n"
-    for log in logs:
+    for log in filtered_logs:
         csv_data += f"{log['name']},{log['admissionNo']},{log['timestamp']},{log['latitude']},{log['longitude']}\n"
 
-    with open("logs.csv", "w") as file:
-        file.write(csv_data)
-
-    return send_from_directory(".", "logs.csv", as_attachment=True)
+    return Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": f"attachment;filename=logs_{selected_date}.csv"}
+    )
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3000, debug=True)

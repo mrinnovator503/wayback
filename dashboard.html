@@ -10,89 +10,40 @@
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
     <style>
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #f4f4f4;
-            padding: 20px;
-            color: #333;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-            padding: 20px;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        #map {
-            width: 90%;
-            height: 400px;
-            margin: 20px auto;
-            border-radius: 10px;
-        }
-
-        .table-container {
-            margin: 20px auto;
-            width: 90%;
-            background: white;
-            border-radius: 10px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-        }
-
-        th {
-            background: #2c3e50;
-            color: white;
-            padding: 15px;
-        }
-
-        td {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-        }
-
-        tr:hover {
-            background: #f8f9fa;
-        }
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }
+        #map { width: 90%; height: 400px; margin: 20px auto; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th { background: #2c3e50; color: white; padding: 15px; }
+        td { padding: 12px; border-bottom: 1px solid #eee; }
+        tr:hover { background: #f8f9fa; }
+        button { padding: 10px; margin-top: 10px; background: #007bff; color: white; border: none; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h2>🚌 Student Bus Tracking System</h2>
-    </div>
-
+    <h2>🚌 Student Bus Tracking System</h2>
+    
     <label>Select Date: <input type="date" id="datePicker" onchange="fetchLogs()"></label>
+    <button onclick="downloadLogs()">📥 Download Logs</button>
 
     <div id="map"></div>
 
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Admission No</th>
-                    <th>Time</th>
-                    <th>Location</th>
-                </tr>
-            </thead>
-            <tbody id="logs-table">
-                <tr><td colspan="4">Loading data...</td></tr>
-            </tbody>
-        </table>
-    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Admission No</th>
+                <th>Time</th>
+                <th>Location</th>
+            </tr>
+        </thead>
+        <tbody id="logs-table">
+            <tr><td colspan="4">Loading data...</td></tr>
+        </tbody>
+    </table>
 
     <script>
         let map = L.map('map').setView([10.0, 76.0], 12);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
 
         async function getAddress(lat, lon) {
             let response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
@@ -118,6 +69,11 @@
                 </tr>`;
                 tableBody.innerHTML += row;
             }
+        }
+
+        function downloadLogs() {
+            let date = document.getElementById("datePicker").value || new Date().toISOString().split("T")[0];
+            window.location.href = `/download_logs?date=${date}`;
         }
 
         fetchLogs();

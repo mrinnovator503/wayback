@@ -299,5 +299,12 @@
         "timestamp": "2025-02-14 10:01:05",
         "latitude": 0.0,
         "longitude": 0.0
+    },
+    {
+        "name": "P S Adithyan",
+        "admissionNo": "21ec053",
+        "timestamp": "2025-02-14 11:00:34",
+        "latitude": 0.0,
+        "longitude": 0.0
     }
 ]
