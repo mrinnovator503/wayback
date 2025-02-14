@@ -4,17 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Bus Tracking System</title>
-    
+
     <!-- Leaflet Maps CSS and JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    
+
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             background-color: #f4f4f4;
+            padding: 20px;
+            color: #333;
+        }
+
+        .header {
             text-align: center;
-            margin: 20px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 24px;
         }
 
         #map {
@@ -22,48 +37,64 @@
             height: 400px;
             margin: 20px auto;
             border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .controls {
+            text-align: center;
+            margin: 20px 0;
         }
 
         .table-container {
-            width: 90%;
             margin: 20px auto;
+            width: 90%;
             background: white;
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-            text-align: center;
+            background: white;
         }
 
         th {
-            background: #007bff;
+            background: #2c3e50;
             color: white;
+            padding: 15px;
         }
 
-        select, button {
-            margin: 10px;
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            #map {
+                height: 300px;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="header">
+        <h2>🚌 Student Bus Tracking System</h2>
+    </div>
 
-    <h2>🚌 Student Bus Tracking System</h2>
-
-    <label for="date-picker">Select Date:</label>
-    <input type="date" id="date-picker">
-    <button onclick="fetchLogs()">Load Logs</button>
-    <button onclick="downloadLogs()">Download CSV</button>
+    <div class="controls">
+        <label>Select Date: <input type="date" id="datePicker"></label>
+        <button onclick="downloadCSV()">📥 Download CSV</button>
+    </div>
 
     <div id="map"></div>
 
@@ -78,71 +109,48 @@
                 </tr>
             </thead>
             <tbody id="logs-table">
-                <tr><td colspan="4">Select a date to load logs</td></tr>
+                <tr><td colspan="4">Loading data...</td></tr>
             </tbody>
         </table>
     </div>
 
     <script>
         let map = L.map('map').setView([10.0, 76.0], 12);
+
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
+
         let busMarker = L.marker([10.0, 76.0]).addTo(map).bindPopup("Bus Location");
 
-        async function getHumanReadableLocation(lat, lon) {
-            if (lat === 0 && lon === 0) return "Unknown Location";
-            let response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
-            let data = await response.json();
-            return data.display_name || "Location Not Found";
-        }
-
         async function fetchLogs() {
-            let date = document.getElementById("date-picker").value;
-            if (!date) {
-                alert("Please select a date.");
-                return;
-            }
+            const ngrokResponse = await fetch("https://mrinnovator503.github.io/wayback/ngrok-url.txt");
+            const ngrokURL = (await ngrokResponse.text()).trim();
+            const apiUrl = `${ngrokURL}/logs`;
 
-            let response = await fetch(`/logs/${date}`);
-            let data = await response.json();
+            const response = await fetch(apiUrl);
+            const data = await response.json();
 
             let tableBody = document.getElementById("logs-table");
             tableBody.innerHTML = "";
 
-            if (data.length === 0) {
-                tableBody.innerHTML = "<tr><td colspan='4'>No logs available for this date</td></tr>";
-                return;
-            }
-
-            let lastLocation = { lat: 10.0, lon: 76.0 };
-            for (let log of data) {
-                let location = await getHumanReadableLocation(log.latitude, log.longitude);
-
+            data.forEach(log => {
                 let row = `<tr>
                     <td>${log.name}</td>
                     <td>${log.admissionNo}</td>
                     <td>${log.timestamp}</td>
-                    <td>${location}</td>
+                    <td>${log.latitude}, ${log.longitude}</td>
                 </tr>`;
                 tableBody.innerHTML += row;
-
-                lastLocation = { lat: log.latitude, lon: log.longitude };
-            }
-
-            busMarker.setLatLng([lastLocation.lat, lastLocation.lon]);
-            map.setView([lastLocation.lat, lastLocation.lon], 14);
+            });
         }
 
-        function downloadLogs() {
-            let date = document.getElementById("date-picker").value;
-            if (!date) {
-                alert("Please select a date.");
-                return;
-            }
-            window.location.href = `/download_logs/${date}`;
+        function downloadCSV() {
+            window.location.href = "/download_logs";
         }
+
+        setInterval(fetchLogs, 10000);
+        fetchLogs();
     </script>
-
 </body>
 </html>
