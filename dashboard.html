@@ -22,7 +22,8 @@
 <body>
     <h2>🚌 Student Bus Tracking System</h2>
     
-    <label>Select Date: <input type="date" id="datePicker" onchange="fetchLogs()"></label>
+    <label>Select Date: <input type="date" id="datePicker"></label>
+    <button onclick="fetchLogs()">🔄 Refresh</button>
     <button onclick="downloadLogs()">📥 Download Logs</button>
 
     <div id="map"></div>
@@ -45,27 +46,19 @@
         let map = L.map('map').setView([10.0, 76.0], 12);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
 
-        async function getAddress(lat, lon) {
-            let response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
-            let data = await response.json();
-            return data.display_name || "Location Not Found";
-        }
-
         async function fetchLogs() {
-            let date = document.getElementById("datePicker").value || new Date().toISOString().split("T")[0];
-            let response = await fetch(`/logs/today`);
+            let response = await fetch("/logs/today");
             let data = await response.json();
 
             let tableBody = document.getElementById("logs-table");
             tableBody.innerHTML = "";
 
             for (let log of data) {
-                let location = await getAddress(log.latitude, log.longitude);
                 let row = `<tr>
                     <td>${log.name}</td>
                     <td>${log.admissionNo}</td>
                     <td>${log.timestamp}</td>
-                    <td>${location}</td>
+                    <td>${log.latitude}, ${log.longitude}</td>
                 </tr>`;
                 tableBody.innerHTML += row;
             }
@@ -76,7 +69,14 @@
             window.location.href = `/download_logs?date=${date}`;
         }
 
-        fetchLogs();
+        // ✅ Auto-fetch today's logs on page load
+        window.onload = () => {
+            document.getElementById("datePicker").value = new Date().toISOString().split("T")[0];
+            fetchLogs();
+        };
+
+        // ✅ Refresh logs every 5 seconds
+        setInterval(fetchLogs, 5000);
     </script>
 </body>
 </html>
