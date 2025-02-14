@@ -465,5 +465,45 @@
         "latitude": 9.727325,
         "longitude": 76.725906,
         "location": "Location Lookup Failed"
+    },
+    {
+        "name": "P S Adithyan",
+        "admissionNo": "21ec053",
+        "timestamp": "2025-02-14 12:38:18",
+        "latitude": 9.727372,
+        "longitude": 76.72583,
+        "location": "Location Lookup Failed"
+    },
+    {
+        "name": "P S Adithyan",
+        "admissionNo": "21ec053",
+        "timestamp": "2025-02-14 13:57:58",
+        "latitude": 9.727386,
+        "longitude": 76.726105,
+        "location": "St. Joseph's College of Engineering and Technology, Bharananganam - Pravithanam Road, SC Colony, Choondacherry, Choondachery, Meenachil, Kottayam, Kerala, 686578, India"
+    },
+    {
+        "name": "Alex S Vanissery",
+        "admissionNo": "21ec014",
+        "timestamp": "2025-02-14 13:58:17",
+        "latitude": 9.727371,
+        "longitude": 76.726082,
+        "location": "St. Joseph's College of Engineering and Technology, Bharananganam - Pravithanam Road, SC Colony, Choondacherry, Choondachery, Meenachil, Kottayam, Kerala, 686578, India"
+    },
+    {
+        "name": "Josemi Joby",
+        "admissionNo": "21ec038",
+        "timestamp": "2025-02-14 13:58:32",
+        "latitude": 9.72735,
+        "longitude": 76.726067,
+        "location": "St. Joseph's College of Engineering and Technology, Bharananganam - Pravithanam Road, SC Colony, Choondacherry, Choondachery, Meenachil, Kottayam, Kerala, 686578, India"
+    },
+    {
+        "name": "Sandra Mariya Binu",
+        "admissionNo": "21ec058",
+        "timestamp": "2025-02-14 13:58:37",
+        "latitude": 9.727346,
+        "longitude": 76.726074,
+        "location": "St. Joseph's College of Engineering and Technology, Bharananganam - Pravithanam Road, SC Colony, Choondacherry, Choondachery, Meenachil, Kottayam, Kerala, 686578, India"
     }
 ]
