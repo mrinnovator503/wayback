@@ -26,23 +26,11 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        h2 {
-            color: #2c3e50;
-            margin: 0;
-            font-size: 24px;
-        }
-
         #map {
             width: 90%;
             height: 400px;
             margin: 20px auto;
             border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .controls {
-            text-align: center;
-            margin: 20px 0;
         }
 
         .table-container {
@@ -50,8 +38,6 @@
             width: 90%;
             background: white;
             border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            overflow: hidden;
         }
 
         table {
@@ -74,16 +60,6 @@
         tr:hover {
             background: #f8f9fa;
         }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-
-            #map {
-                height: 300px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -91,10 +67,7 @@
         <h2>🚌 Student Bus Tracking System</h2>
     </div>
 
-    <div class="controls">
-        <label>Select Date: <input type="date" id="datePicker"></label>
-        <button onclick="downloadCSV()">📥 Download CSV</button>
-    </div>
+    <label>Select Date: <input type="date" id="datePicker" onchange="fetchLogs()"></label>
 
     <div id="map"></div>
 
@@ -121,35 +94,32 @@
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
-        let busMarker = L.marker([10.0, 76.0]).addTo(map).bindPopup("Bus Location");
+        async function getAddress(lat, lon) {
+            let response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+            let data = await response.json();
+            return data.display_name || "Location Not Found";
+        }
 
         async function fetchLogs() {
-            const ngrokResponse = await fetch("https://mrinnovator503.github.io/wayback/ngrok-url.txt");
-            const ngrokURL = (await ngrokResponse.text()).trim();
-            const apiUrl = `${ngrokURL}/logs`;
-
-            const response = await fetch(apiUrl);
-            const data = await response.json();
+            let date = document.getElementById("datePicker").value || new Date().toISOString().split("T")[0];
+            let response = await fetch(`/logs/today`);
+            let data = await response.json();
 
             let tableBody = document.getElementById("logs-table");
             tableBody.innerHTML = "";
 
-            data.forEach(log => {
+            for (let log of data) {
+                let location = await getAddress(log.latitude, log.longitude);
                 let row = `<tr>
                     <td>${log.name}</td>
                     <td>${log.admissionNo}</td>
                     <td>${log.timestamp}</td>
-                    <td>${log.latitude}, ${log.longitude}</td>
+                    <td>${location}</td>
                 </tr>`;
                 tableBody.innerHTML += row;
-            });
+            }
         }
 
-        function downloadCSV() {
-            window.location.href = "/download_logs";
-        }
-
-        setInterval(fetchLogs, 10000);
         fetchLogs();
     </script>
 </body>

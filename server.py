@@ -55,11 +55,19 @@ def receive_scan():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# ✅ Get logs (for dashboard)
+# ✅ Get all logs
 @app.route('/logs', methods=['GET'])
 def get_logs():
     logs = load_logs()
     return jsonify(logs)
+
+# ✅ Get today's logs
+@app.route('/logs/today', methods=['GET'])
+def get_today_logs():
+    logs = load_logs()
+    today = datetime.now().strftime("%Y-%m-%d")
+    today_logs = [log for log in logs if log["timestamp"].startswith(today)]
+    return jsonify(today_logs)
 
 # ✅ Serve the dashboard page
 @app.route('/')
