@@ -383,5 +383,33 @@
         "timestamp": "2025-02-14 11:49:34",
         "latitude": 9.727237,
         "longitude": 76.725967
+    },
+    {
+        "name": "P S Adithyan",
+        "admissionNo": "21ec053",
+        "timestamp": "2025-02-14 12:00:05",
+        "latitude": 0.0,
+        "longitude": 0.0
+    },
+    {
+        "name": "Alex S Vanissery",
+        "admissionNo": "21ec014",
+        "timestamp": "2025-02-14 12:00:18",
+        "latitude": 0.0,
+        "longitude": 0.0
+    },
+    {
+        "name": "Josemi Joby",
+        "admissionNo": "21ec038",
+        "timestamp": "2025-02-14 12:01:33",
+        "latitude": 9.726787,
+        "longitude": 76.726181
+    },
+    {
+        "name": "Sandra Mariya Binu",
+        "admissionNo": "21ec058",
+        "timestamp": "2025-02-14 12:01:38",
+        "latitude": 9.726787,
+        "longitude": 76.726189
     }
 ]

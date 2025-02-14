@@ -9,22 +9,18 @@ CORS(app)
 
 STUDENT_LOGS_FILE = "student_logs.json"
 
-# ✅ Ensure log file exists
 if not os.path.exists(STUDENT_LOGS_FILE):
     with open(STUDENT_LOGS_FILE, "w") as file:
         json.dump([], file)
 
-# ✅ Load logs from file
 def load_logs():
     with open(STUDENT_LOGS_FILE, "r") as file:
         return json.load(file)
 
-# ✅ Save logs to file
 def save_logs(data):
     with open(STUDENT_LOGS_FILE, "w") as file:
         json.dump(data, file, indent=4)
 
-# ✅ Handle RFID scan and save log
 @app.route('/scan', methods=['POST'])
 def receive_scan():
     try:
@@ -55,13 +51,11 @@ def receive_scan():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# ✅ Get all logs
 @app.route('/logs', methods=['GET'])
 def get_logs():
     logs = load_logs()
     return jsonify(logs)
 
-# ✅ Get today's logs
 @app.route('/logs/today', methods=['GET'])
 def get_today_logs():
     logs = load_logs()
@@ -69,29 +63,11 @@ def get_today_logs():
     today_logs = [log for log in logs if log["timestamp"].startswith(today)]
     return jsonify(today_logs)
 
-# ✅ Get latest scanned location
-@app.route('/latest_location', methods=['GET'])
-def get_latest_location():
-    logs = load_logs()
-    today = datetime.now().strftime("%Y-%m-%d")
-
-    latest_entry = next(
-        (log for log in reversed(logs) if log["latitude"] and log["longitude"] and log["timestamp"].startswith(today)),
-        None
-    )
-
-    if latest_entry:
-        return jsonify(latest_entry)
-    
-    return jsonify({"error": "No valid location found"}), 404
-
-# ✅ Serve the dashboard page
 @app.route('/')
 @app.route('/dashboard.html')
 def serve_dashboard():
     return send_from_directory(".", "dashboard.html")
 
-# ✅ Export logs for a selected date as CSV
 @app.route('/download_logs', methods=['GET'])
 def download_logs():
     logs = load_logs()
@@ -109,11 +85,7 @@ def download_logs():
     for log in filtered_logs:
         csv_data += f"{log['name']},{log['admissionNo']},{log['timestamp']},{log['latitude']},{log['longitude']}\n"
 
-    return Response(
-        csv_data,
-        mimetype="text/csv",
-        headers={"Content-Disposition": f"attachment;filename=logs_{selected_date}.csv"}
-    )
+    return Response(csv_data, mimetype="text/csv", headers={"Content-Disposition": f"attachment;filename=logs_{selected_date}.csv"})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3000, debug=True)
