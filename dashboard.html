@@ -16,16 +16,17 @@
         th { background: #2c3e50; color: white; padding: 15px; }
         td { padding: 12px; border-bottom: 1px solid #eee; }
         tr:hover { background: #f8f9fa; }
+        button { padding: 10px; margin-top: 10px; background: #007bff; color: white; border: none; cursor: pointer; }
     </style>
 </head>
 <body>
     <h2>🚌 Student Bus Tracking System</h2>
     
     <label>Select Date: <input type="date" id="datePicker"></label>
-    <button onclick="downloadLogs()">📥 Download Logs</button>
+    <button onclick="fetchLogs()">🔄 Refresh</button>
 
+    <p><strong>Last Location Update:</strong> <span id="lastUpdate">Fetching...</span></p>
     <div id="map"></div>
-    <h3>📍 Last Updated Location: <span id="last-location">Not Available</span></h3>
 
     <table>
         <thead>
@@ -45,23 +46,7 @@
         let map = L.map('map').setView([10.0, 76.0], 12);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
 
-        let busMarker = L.marker([10.0, 76.0]).addTo(map);
-
-        async function getAddress(lat, lon) {
-            let response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
-            let data = await response.json();
-            return data.display_name || "Location Not Found";
-        }
-
-        async function updateLocation() {
-            let response = await fetch("/latest_location");
-            let data = await response.json();
-
-            if (!data.error) {
-                busMarker.setLatLng([data.latitude, data.longitude]);
-                document.getElementById("last-location").textContent = await getAddress(data.latitude, data.longitude);
-            }
-        }
+        let busMarker = L.marker([10.0, 76.0]).addTo(map).bindPopup("Bus Location");
 
         async function fetchLogs() {
             let response = await fetch("/logs/today");
@@ -71,32 +56,39 @@
             tableBody.innerHTML = "";
 
             for (let log of data) {
-                let location = await getAddress(log.latitude, log.longitude);
                 let row = `<tr>
                     <td>${log.name}</td>
                     <td>${log.admissionNo}</td>
                     <td>${log.timestamp}</td>
-                    <td>${location}</td>
+                    <td>${log.location}</td>
                 </tr>`;
                 tableBody.innerHTML += row;
             }
         }
 
-        function downloadLogs() {
-            let date = document.getElementById("datePicker").value || new Date().toISOString().split("T")[0];
-            window.location.href = `/download_logs?date=${date}`;
+        async function fetchLastLocation() {
+            let response = await fetch("/last_location");
+            let data = await response.json();
+
+            if (data.error) {
+                document.getElementById("lastUpdate").textContent = "No data available";
+                return;
+            }
+
+            busMarker.setLatLng([data.latitude, data.longitude]);
+            busMarker.bindPopup(`📍 ${data.location}`).openPopup();
+            map.setView([data.latitude, data.longitude], 14);
+            document.getElementById("lastUpdate").textContent = data.timestamp;
         }
 
         window.onload = () => {
             document.getElementById("datePicker").value = new Date().toISOString().split("T")[0];
             fetchLogs();
-            updateLocation();
+            fetchLastLocation();
         };
 
-        setInterval(() => {
-            fetchLogs();
-            updateLocation();
-        }, 5000);
+        setInterval(fetchLogs, 5000);
+        setInterval(fetchLastLocation, 5000);
     </script>
 </body>
 </html>

@@ -411,5 +411,19 @@
         "timestamp": "2025-02-14 12:01:38",
         "latitude": 9.726787,
         "longitude": 76.726189
+    },
+    {
+        "name": "P S Adithyan",
+        "admissionNo": "21ec053",
+        "timestamp": "2025-02-14 12:10:41",
+        "latitude": 9.726441,
+        "longitude": 76.726158
+    },
+    {
+        "name": "Josemi Joby",
+        "admissionNo": "21ec038",
+        "timestamp": "2025-02-14 12:11:02",
+        "latitude": 9.726385,
+        "longitude": 76.726143
     }
 ]
