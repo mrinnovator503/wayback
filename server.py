@@ -3,7 +3,7 @@ import sqlite3
 import os
 from datetime import datetime
 
-app = Flask(__name__, static_folder="static")  # ✅ Ensure 'static' folder is correctly referenced
+app = Flask(__name__, static_folder="static")
 DATABASE_FILE = "student_logs.db"
 
 # ✅ Ensure database exists
@@ -21,12 +21,6 @@ def initialize_database():
 
 initialize_database()
 
-# ✅ Serve the dashboard page
-@app.route('/')
-@app.route('/dashboard')
-def serve_dashboard():
-    return send_from_directory("static", "dashboard.html")  # ✅ Ensure dashboard.html is inside 'static' folder
-
 # ✅ Handle RFID scan and save log
 @app.route('/scan', methods=['POST'])
 def receive_scan():
@@ -42,6 +36,24 @@ def receive_scan():
     conn.close()
 
     return jsonify({"message": "Log added"}), 200
+
+# ✅ Get today's logs
+@app.route('/logs/today', methods=['GET'])
+def get_today_logs():
+    today = datetime.now().strftime("%Y-%m-%d")
+    conn = sqlite3.connect(DATABASE_FILE)
+    cursor = conn.cursor()
+    cursor.execute("SELECT name, admission_no, scan_type, timestamp FROM logs WHERE timestamp LIKE ?", (today + "%",))
+    logs = cursor.fetchall()
+    conn.close()
+
+    return jsonify([{"name": log[0], "admissionNo": log[1], "scanType": log[2], "timestamp": log[3]} for log in logs])
+
+# ✅ Serve the dashboard page
+@app.route('/')
+@app.route('/dashboard')
+def serve_dashboard():
+    return send_from_directory("static", "dashboard.html")  # ✅ Ensure dashboard.html is inside 'static' folder
 
 # ✅ Start server with dynamic port selection
 if __name__ == '__main__':
