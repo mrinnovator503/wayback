@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Bus Tracking System</title>
-
-    <!-- Leaflet Maps CSS and JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
@@ -21,12 +19,11 @@
 </head>
 <body>
     <h2>🚌 Student Bus Tracking System</h2>
-    
+
     <label>Select Date: <input type="date" id="datePicker"></label>
     <button onclick="fetchLogs()">🔄 Refresh</button>
     <button onclick="downloadLogs()">📥 Download Logs</button>
 
-    <p><strong>Last Location Update:</strong> <span id="lastUpdate">Fetching...</span></p>
     <div id="map"></div>
 
     <table>
@@ -34,25 +31,24 @@
             <tr>
                 <th>Name</th>
                 <th>Admission No</th>
+                <th>Scan Type</th>
                 <th>Time</th>
                 <th>Location</th>
             </tr>
         </thead>
         <tbody id="logs-table">
-            <tr><td colspan="4">Loading data...</td></tr>
+            <tr><td colspan="5">Loading data...</td></tr>
         </tbody>
     </table>
 
     <script>
         let map = L.map('map').setView([10.0, 76.0], 12);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
-
         let busMarker = L.marker([10.0, 76.0]).addTo(map).bindPopup("Bus Location");
 
         async function fetchLogs() {
             let response = await fetch("/logs/today");
             let data = await response.json();
-
             let tableBody = document.getElementById("logs-table");
             tableBody.innerHTML = "";
 
@@ -60,29 +56,11 @@
                 let row = `<tr>
                     <td>${log.name}</td>
                     <td>${log.admissionNo}</td>
+                    <td>${log.scanType}</td>
                     <td>${log.timestamp}</td>
                     <td>${log.location}</td>
                 </tr>`;
                 tableBody.innerHTML += row;
-            }
-        }
-
-        async function fetchLiveLocation() {
-            try {
-                let response = await fetch("/last_location");
-                let data = await response.json();
-
-                if (data.latitude && data.longitude) {
-                    let newLatLng = [data.latitude, data.longitude];
-                    busMarker.setLatLng(newLatLng);
-                    map.setView(newLatLng, 14);
-                    busMarker.bindPopup(`🚌 Bus Location: ${data.location}`).openPopup();
-                    document.getElementById("lastUpdate").textContent = `Last Updated: ${data.timestamp}`;
-                    console.log(`Updated map to: ${data.latitude}, ${data.longitude}`);
-                }
-            } catch (error) {
-                console.error("Error fetching live location:", error);
-                document.getElementById("lastUpdate").textContent = "Error fetching location";
             }
         }
 
@@ -94,11 +72,9 @@
         window.onload = () => {
             document.getElementById("datePicker").value = new Date().toISOString().split("T")[0];
             fetchLogs();
-            fetchLiveLocation();
         };
 
         setInterval(fetchLogs, 5000);
-        setInterval(fetchLiveLocation, 5000);
     </script>
 </body>
 </html>
