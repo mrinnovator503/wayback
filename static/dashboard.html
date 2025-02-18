@@ -47,10 +47,16 @@
         let busMarker = L.marker([10.0, 76.0]).addTo(map).bindPopup("Bus Location");
 
         async function fetchLogs() {
+        try {
             let response = await fetch("/logs/today");
             let data = await response.json();
             let tableBody = document.getElementById("logs-table");
-            tableBody.innerHTML = "";
+            tableBody.innerHTML = ""; // ✅ Clear previous logs
+
+            if (data.length === 0) {
+                tableBody.innerHTML = "<tr><td colspan='5'>No logs available today</td></tr>";
+                return;
+            }
 
             for (let log of data) {
                 let row = `<tr>
@@ -58,23 +64,21 @@
                     <td>${log.admissionNo}</td>
                     <td>${log.scanType}</td>
                     <td>${log.timestamp}</td>
-                    <td>${log.location}</td>
+                    <td>${log.location || "Location Unknown"}</td>
                 </tr>`;
                 tableBody.innerHTML += row;
             }
+
+            console.log("✅ Logs updated successfully:", data);
+
+        } catch (error) {
+            console.error("❌ Error fetching logs:", error);
+            document.getElementById("logs-table").innerHTML = "<tr><td colspan='5'>Error fetching logs</td></tr>";
         }
+    }
 
-        function downloadLogs() {
-            let date = document.getElementById("datePicker").value;
-            window.location.href = `/download_logs?date=${date}`;
-        }
-
-        window.onload = () => {
-            document.getElementById("datePicker").value = new Date().toISOString().split("T")[0];
-            fetchLogs();
-        };
-
-        setInterval(fetchLogs, 5000);
+    window.onload = fetchLogs;
+    setInterval(fetchLogs, 5000); // ✅ Auto-refresh every 5 seconds
     </script>
 </body>
 </html>
