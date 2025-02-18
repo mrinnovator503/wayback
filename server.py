@@ -3,7 +3,7 @@ import sqlite3
 import os
 from datetime import datetime
 
-app = Flask(__name__, static_folder=".")
+app = Flask(__name__, static_folder="static")  # ✅ Ensure 'static' folder is correctly referenced
 DATABASE_FILE = "student_logs.db"
 
 # ✅ Ensure database exists
@@ -21,6 +21,12 @@ def initialize_database():
 
 initialize_database()
 
+# ✅ Serve the dashboard page
+@app.route('/')
+@app.route('/dashboard')
+def serve_dashboard():
+    return send_from_directory("static", "dashboard.html")  # ✅ Ensure dashboard.html is inside 'static' folder
+
 # ✅ Handle RFID scan and save log
 @app.route('/scan', methods=['POST'])
 def receive_scan():
@@ -37,7 +43,7 @@ def receive_scan():
 
     return jsonify({"message": "Log added"}), 200
 
-# ✅ Start server
+# ✅ Start server with dynamic port selection
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 3000))
     app.run(host='0.0.0.0', port=port, debug=True)
